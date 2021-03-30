@@ -1,0 +1,18 @@
+Package: twittrcademic
+Title: Collecting Tweet Data Via The Twitter Academic Research Product Track 
+Version: 0.0.0.9000
+Authors@R: c(
+    person("Stefan", "Daume", email = "stefan.daume@su.se", 
+            role = c("cre", "aut")))
+Description: This package provides a collection of utility functions supporting 
+    the collection of Tweet data via Twitter v2 API endpoints in the Twitter 
+    Academic Research product track 
+    (<https://developer.twitter.com/en/solutions/academic-research>).
+URL: https://sdaume.github.io/twittrcademic/, https://github.com/sdaume/twittrcademic
+BugReports: https://github.com/sdaume/twittrcademic/issues
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.1.1
+
