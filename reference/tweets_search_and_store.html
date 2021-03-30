@@ -6,8 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>twittrcademic: Collecting Tweet Data Via The Twitter Academic Research
-Product Track — twittrcademic • twittrcademic</title>
+<title>Retrieve and store all Tweets for a given full archive search query — tweets_search_and_store • twittrcademic</title>
 
 
 <!-- jquery -->
@@ -42,13 +41,14 @@ Product Track — twittrcademic • twittrcademic</title>
   <link href="../extra.css" rel="stylesheet">
   
 
-<meta property="og:title" content="twittrcademic: Collecting Tweet Data Via The Twitter Academic Research
-Product Track — twittrcademic" />
-<meta property="og:description" content="This package provides a collection of utility functions supporting the
-collection of Tweet data via Twitter v2 API endpoints in the Twitter Academic
-Research product track
+<meta property="og:title" content="Retrieve and store all Tweets for a given full archive search query — tweets_search_and_store" />
+<meta property="og:description" content="tweets_search_and_store allows to execute long-running Tweet searches
+against the
+/2/tweets/search/all
+endpoint in the Twitter Academic Research product track
 Twitter
-Academic Research product track." />
+Academic Research product track and store the results as batches of the
+original JSON responses." />
 
 
 
@@ -116,22 +116,86 @@ Academic Research product track." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>twittrcademic: Collecting Tweet Data Via The Twitter Academic Research
-Product Track</h1>
-    <small class="dont-index">Source: <a href='https://github.com/sdaume/twittrcademic/blob/master/R/twittrcademic.R'><code>R/twittrcademic.R</code></a></small>
-    <div class="hidden name"><code>twittrcademic.Rd</code></div>
+    <h1>Retrieve and store all Tweets for a given full archive search query</h1>
+    <small class="dont-index">Source: <a href='https://github.com/sdaume/twittrcademic/blob/master/R/search-tweets.R'><code>R/search-tweets.R</code></a></small>
+    <div class="hidden name"><code>tweets_search_and_store.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This package provides a collection of utility functions supporting the
-collection of Tweet data via Twitter v2 API endpoints in the Twitter Academic
-Research product track
+    <p><code>tweets_search_and_store</code> allows to execute long-running Tweet searches
+against the
+<a href='https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-all'>/2/tweets/search/all</a>
+endpoint in the Twitter Academic Research product track
 <a href='https://developer.twitter.com/en/solutions/academic-research'>Twitter
-Academic Research product track</a>.</p>
+Academic Research product track</a> and store the results as batches of the
+original JSON responses.</p>
     </div>
 
+    <pre class="usage"><span class='fu'>tweets_search_and_store</span><span class='op'>(</span><span class='va'>queryString</span>, fromDate <span class='op'>=</span> <span class='cn'>NULL</span>, toDate <span class='op'>=</span> <span class='cn'>NULL</span>,
+  batchBaseLabel <span class='op'>=</span> <span class='cn'>NULL</span>, maxBatchSize <span class='op'>=</span> <span class='fl'>10000</span>,
+  twitterBearerToken <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>queryString</th>
+      <td><p>a character string specifying a value for the Tweet search
+query parameter (e.g. <em>"sustainability (climate change)"</em>,
+<em>"from:stefandaume"</em> etc). See
+<a href='https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-all'>here</a>
+for details. Maximum of 1024 characters.</p></td>
+    </tr>
+    <tr>
+      <th>fromDate</th>
+      <td><p>a character string of format ("YYYY-MM-DD") specifying the
+date for the oldest Tweets to be included in the search results
+(interpreted as inclusive); corresponds to the <code>start_time</code> parameter
+of the
+<a href='https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-all'>/2/tweets/search/all</a>
+endpoint. Must NOT be a date before "2006-03-21". If no value is supplied
+(default), it is interpreted as the 30th day before <code>toDate</code>.</p></td>
+    </tr>
+    <tr>
+      <th>toDate</th>
+      <td><p>a character string of format ("YYYY-MM-DD") specifying the date
+for the most recent Tweets to be included in the search results
+(interpreted as inclusive); corresponds to the <code>end_time</code> parameter of
+the
+<a href='https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-all'>/2/tweets/search/all</a>
+endpoint. If no value is supplied (default), it is interpreted as the
+current date.</p></td>
+    </tr>
+    <tr>
+      <th>batchBaseLabel</th>
+      <td><p>a character string used to name the stored Tweet search
+batch files.</p></td>
+    </tr>
+    <tr>
+      <th>maxBatchSize</th>
+      <td><p>an integer specifying the approximate number of Tweets in
+each stored batch of Tweet search responses</p></td>
+    </tr>
+    <tr>
+      <th>twitterBearerToken</th>
+      <td><p>a character string specifying a valid bearer token
+for the
+<a href='https://developer.twitter.com/en/solutions/academic-research'>Twitter
+Academic Research product track</a> (see <code><a href='oauth_twitter_token.html'>oauth_twitter_token()</a></code>).</p></td>
+    </tr>
+    </table>
 
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Based on a given Tweet search query and (optional) date range this function
+iteratively retrieves all matching Tweets and stores the results in batches
+as appropriately labelled JSON files; the complete set of results is split in
+batches containing the (approximate) number of Tweets specified by
+<code>maxBatchSize</code> Tweets.</p>
+<p>The calls to the search API endpoint are timed such the API call limit of at
+most 300 calls per 15 minute window is observed; this corresponds to a
+maximum of 150.000 Tweets that can be retrieved every 15 minutes (each
+individual API call returns at most 500 Tweets).</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -4,6 +4,39 @@
     <loc>https://sdaume.github.io/twittrcademic/index.html</loc>
   </url>
   <url>
+    <loc>https://sdaume.github.io/twittrcademic/reference/dot-jq_metadata_v2_filter.html</loc>
+  </url>
+  <url>
+    <loc>https://sdaume.github.io/twittrcademic/reference/dot-newest_id.html</loc>
+  </url>
+  <url>
+    <loc>https://sdaume.github.io/twittrcademic/reference/dot-next_token.html</loc>
+  </url>
+  <url>
+    <loc>https://sdaume.github.io/twittrcademic/reference/dot-oldest_id.html</loc>
+  </url>
+  <url>
+    <loc>https://sdaume.github.io/twittrcademic/reference/dot-result_count.html</loc>
+  </url>
+  <url>
+    <loc>https://sdaume.github.io/twittrcademic/reference/dot-search_metadata.html</loc>
+  </url>
+  <url>
+    <loc>https://sdaume.github.io/twittrcademic/reference/dot-url_v2_search_tweets_all.html</loc>
+  </url>
+  <url>
+    <loc>https://sdaume.github.io/twittrcademic/reference/oauth_twitter_token.html</loc>
+  </url>
+  <url>
+    <loc>https://sdaume.github.io/twittrcademic/reference/pipe.html</loc>
+  </url>
+  <url>
+    <loc>https://sdaume.github.io/twittrcademic/reference/tweets_search_and_store.html</loc>
+  </url>
+  <url>
     <loc>https://sdaume.github.io/twittrcademic/reference/twittrcademic.html</loc>
+  </url>
+  <url>
+    <loc>https://sdaume.github.io/twittrcademic/reference/v2_tweets_search_all.html</loc>
   </url>
 </urlset>

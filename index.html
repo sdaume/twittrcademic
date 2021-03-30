@@ -76,22 +76,57 @@
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#twittrcademic" class="anchor"></a>twittrcademic</h1></div>
 <p>The <code>twittrcademic</code> package provides a collection of utility functions supporting the retrieval of Tweet data via Twitter v2 API endpoints in the <a href="https://developer.twitter.com/en/solutions/academic-research">Twitter Academic Research product track</a>.</p>
+<p>This package has been set up as a personal library to collect Tweet data for academic research. <strong>The package does not provide any functions to analyze the retrieved data.</strong></p>
 <div id="background-and-prerequisites" class="section level2">
 <h2 class="hasAnchor">
 <a href="#background-and-prerequisites" class="anchor"></a>Background and prerequisites</h2>
-<p>TBD</p>
+<p>The API endpoints in the <a href="https://developer.twitter.com/en/solutions/academic-research">Twitter Academic Research product track</a> offer access to the full Tweet archive. These endpoints rely on the <a href="https://developer.twitter.com/en/docs/twitter-api/early-access">Twitter API v2</a> with a significantly different Tweet object model compared with the v1.1 API. In addition to structural differences in the JSON responses, the v2 endpoints require that most objects and attributes, in for example a Tweet object, have to be explicitly specified in the API request in order to be included in the response. (By default the v2 search endpoint JSON contains only Tweet ID and text.)</p>
+<p>In order to use the functions in this package API keys specifically for the <a href="https://developer.twitter.com/en/solutions/academic-research">Academic Research product track</a> are required, standard API access keys will not work.</p>
 </div>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>Install the development version of <code>twittrcademic</code> from <a href="https://github.com/">GitHub</a> with:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># install.packages("devtools")</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a>devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">"sdaume/twittrcademic"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># install.packages("devtools")</span>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"sdaume/twittrcademic"</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="usage" class="section level2">
 <h2 class="hasAnchor">
 <a href="#usage" class="anchor"></a>Usage</h2>
-<p>TBD</p>
+<p>The package functions can be used to execute a single Tweet search API call against the <a href="https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-all">/2/tweets/search/all</a> endpoint or execute long-running searches for large result sets and store the results in multiple suitably sized batches.</p>
+<div id="a-single-search-api-call" class="section level3">
+<h3 class="hasAnchor">
+<a href="#a-single-search-api-call" class="anchor"></a>A single search API call</h3>
+<p>This will return a JSON response of at most 500 Tweets, which could be processed directly with tools like <code>jsonlite</code>. The example below would return the 100 most recent Tweets containing the keyword <strong><em>openscience</em></strong> and posted on the <strong><em>12. June 2020</em></strong> or earlier.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://sdaume.github.io/twittrcademic">twittrcademic</a></span><span class="op">)</span>
+
+<span class="va">bearer</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/oauth_twitter_token.html">oauth_twitter_token</a></span><span class="op">(</span>consumerKey <span class="op">=</span> <span class="st">"YOUR_ACADEMIC_PRODUCT_API_KEY"</span>,
+                              consumerSecret <span class="op">=</span> <span class="st">"YOUR_ACADEMIC_PRODUCT_API_SECRET"</span><span class="op">)</span>
+
+<span class="va">json_response</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/v2_tweets_search_all.html">v2_tweets_search_all</a></span><span class="op">(</span>queryString <span class="op">=</span> <span class="st">"openscience"</span>, 
+                                      maxResult <span class="op">=</span> <span class="fl">100</span>,  
+                                      toDate <span class="op">=</span> <span class="st">"2020-06-12"</span>,
+                                      twitterBearerToken <span class="op">=</span> <span class="va">bearer</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="retrieve-and-store-all-available-results" class="section level3">
+<h3 class="hasAnchor">
+<a href="#retrieve-and-store-all-available-results" class="anchor"></a>Retrieve and store all available results</h3>
+<p>The following would return all Tweets posted in the year <strong><em>2020</em></strong> that contain the term <strong><em>planetary boundaries</em></strong>. This will run until all results are retrieved. The results will be summarised into batches of files that contain approximately <strong><em>20000</em></strong> Tweets; files are stored in the working directory and all start with <strong><em>some_name</em></strong> (for example <code>some_name_20200101_20201231_1_20453.json</code>).</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://sdaume.github.io/twittrcademic">twittrcademic</a></span><span class="op">)</span>
+
+<span class="va">bearer</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/oauth_twitter_token.html">oauth_twitter_token</a></span><span class="op">(</span>consumerKey <span class="op">=</span> <span class="st">"YOUR_ACADEMIC_PRODUCT_API_KEY"</span>,
+                              consumerSecret <span class="op">=</span> <span class="st">"YOUR_ACADEMIC_PRODUCT_API_SECRET"</span><span class="op">)</span>
+
+<span class="fu"><a href="reference/tweets_search_and_store.html">tweets_search_and_store</a></span><span class="op">(</span>queryString <span class="op">=</span> <span class="st">"planetary boundaries"</span>, 
+                        fromDate <span class="op">=</span> <span class="st">"2020-01-01"</span>, 
+                        toDate <span class="op">=</span> <span class="st">"2020-12-31"</span>,
+                        maxBatchSize <span class="op">=</span> <span class="fl">20000</span>,
+                        batchBaseLabel <span class="op">=</span> <span class="st">"some_name"</span>,
+                        twitterBearerToken <span class="op">=</span> <span class="va">bearer</span><span class="op">)</span></code></pre></div>
+</div>
 </div>
 <div id="license-credits-and-acknowledgements" class="section level2">
 <h2 class="hasAnchor">
