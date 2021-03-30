@@ -15,21 +15,88 @@ supporting the retrieval of Tweet data via Twitter v2 API endpoints in
 the [Twitter Academic Research product
 track](https://developer.twitter.com/en/solutions/academic-research).
 
+This package has been set up as a personal library to collect Tweet data
+for academic research. **The package does not provide any functions to
+analyze the retrieved data.**
+
 ## Background and prerequisites
 
-TBD
+The API endpoints in the [Twitter Academic Research product
+track](https://developer.twitter.com/en/solutions/academic-research)
+offer access to the full Tweet archive. These endpoints rely on the
+[Twitter API
+v2](https://developer.twitter.com/en/docs/twitter-api/early-access) with
+a significantly different Tweet object model compared with the v1.1 API.
+In addition to structural differences in the JSON responses, the v2
+endpoints require that most objects and attributes, in for example a
+Tweet object, have to be explicitly specified in the API request in
+order to be included in the response. (By default the v2 search endpoint
+JSON contains only Tweet ID and text.)
+
+In order to use the functions in this package API keys specifically for
+the [Academic Research product
+track](https://developer.twitter.com/en/solutions/academic-research) are
+required, standard API access keys will not work.
 
 ## Installation
 
 Install the development version of `twittrcademic` from
 [GitHub](https://github.com/) with:
 
-    # install.packages("devtools")
-    devtools::install_github("sdaume/twittrcademic")
+``` r
+# install.packages("devtools")
+devtools::install_github("sdaume/twittrcademic")
+```
 
 ## Usage
 
-TBD
+The package functions can be used to execute a single Tweet search API
+call against the
+[/2/tweets/search/all](https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-all)
+endpoint or execute long-running searches for large result sets and
+store the results in multiple suitably sized batches.
+
+### A single search API call
+
+This will return a JSON response of at most 500 Tweets, which could be
+processed directly with tools like `jsonlite`. The example below would
+return the 100 most recent Tweets containing the keyword
+***openscience*** and posted on the ***12. June 2020*** or earlier.
+
+``` r
+library(twittrcademic)
+
+bearer <- oauth_twitter_token(consumerKey = "YOUR_ACADEMIC_PRODUCT_API_KEY",
+                              consumerSecret = "YOUR_ACADEMIC_PRODUCT_API_SECRET")
+
+json_response <- v2_tweets_search_all(queryString = "openscience", 
+                                      maxResult = 100,  
+                                      toDate = "2020-06-12",
+                                      twitterBearerToken = bearer)
+```
+
+### Retrieve and store all available results
+
+The following would return all Tweets posted in the year ***2020*** that
+contain the term ***planetary boundaries***. This will run until all
+results are retrieved. The results will be summarised into batches of
+files that contain approximately ***20000*** Tweets; files are stored in
+the working directory and all start with ***some\_name*** (for example
+`some_name_20200101_20201231_1_20453.json`).
+
+``` r
+library(twittrcademic)
+
+bearer <- oauth_twitter_token(consumerKey = "YOUR_ACADEMIC_PRODUCT_API_KEY",
+                              consumerSecret = "YOUR_ACADEMIC_PRODUCT_API_SECRET")
+
+tweets_search_and_store(queryString = "planetary boundaries", 
+                        fromDate = "2020-01-01", 
+                        toDate = "2020-12-31",
+                        maxBatchSize = 20000,
+                        batchBaseLabel = "some_name",
+                        twitterBearerToken = bearer)
+```
 
 ## License, credits and acknowledgements
 
