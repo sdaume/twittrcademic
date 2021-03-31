@@ -111,7 +111,9 @@ v2_tweets_search_all <- function(queryString, fromDate = NULL, toDate = NULL,
 #'   batch files.
 #'
 #' @param maxBatchSize an integer specifying the approximate number of Tweets in
-#'   each stored batch of Tweet search responses
+#'   each stored batch of Tweet search responses. This number serves as a
+#'   threshold, once more Tweets than \code{maxBatchSize} are accumulated, they
+#'   are stored as a batch.
 #'
 #' @param twitterBearerToken a character string specifying a valid bearer token
 #'   for the

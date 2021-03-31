@@ -78,11 +78,14 @@ json_response <- v2_tweets_search_all(queryString = "openscience",
 ### Retrieve and store all available results
 
 The following would return all Tweets posted in the year ***2020*** that
-contain the term ***planetary boundaries***. This will run until all
+contain the term ***‘planetary boundaries’***. This will run until all
 results are retrieved. The results will be summarised into batches of
 files that contain approximately ***20000*** Tweets; files are stored in
-the working directory and all start with ***some\_name*** (for example
-`some_name_20200101_20201231_1_20453.json`).
+the working directory and all start with ***‘query\_label’*** (for
+example `query_label_20200101_20201231_1_20453.json`); in addition to
+the base label the file name indicates the date range (implicit or
+explicit) of the query, a numeric index for the batch and the number of
+Tweet results in the given batch.
 
 ``` r
 library(twittrcademic)
@@ -94,7 +97,7 @@ tweets_search_and_store(queryString = "planetary boundaries",
                         fromDate = "2020-01-01", 
                         toDate = "2020-12-31",
                         maxBatchSize = 20000,
-                        batchBaseLabel = "some_name",
+                        batchBaseLabel = "query_label",
                         twitterBearerToken = bearer)
 ```
 

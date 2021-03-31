@@ -35,7 +35,9 @@ current date.}
 batch files.}
 
 \item{maxBatchSize}{an integer specifying the approximate number of Tweets in
-each stored batch of Tweet search responses}
+each stored batch of Tweet search responses. This number serves as a
+threshold, once more Tweets than \code{maxBatchSize} are accumulated, they
+are stored as a batch.}
 
 \item{twitterBearerToken}{a character string specifying a valid bearer token
 for the
