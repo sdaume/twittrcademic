@@ -174,7 +174,9 @@ batch files.</p></td>
     <tr>
       <th>maxBatchSize</th>
       <td><p>an integer specifying the approximate number of Tweets in
-each stored batch of Tweet search responses</p></td>
+each stored batch of Tweet search responses. This number serves as a
+threshold, once more Tweets than <code>maxBatchSize</code> are accumulated, they
+are stored as a batch.</p></td>
     </tr>
     <tr>
       <th>twitterBearerToken</th>
