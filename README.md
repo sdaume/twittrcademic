@@ -26,14 +26,14 @@ track](https://developer.twitter.com/en/solutions/academic-research)
 offer access to the full Tweet archive. These endpoints rely on the
 [Twitter API
 v2](https://developer.twitter.com/en/docs/twitter-api/early-access) with
-a significantly different Tweet object model compared with the v1.1 API.
+a significantly different Tweet object model compared to the v1.1 API.
 In addition to structural differences in the JSON responses, the v2
-endpoints require that most objects and attributes, in for example a
-Tweet object, have to be explicitly specified in the API request in
+endpoints require that most objects and attributes — in for example a
+Tweet object — have to be explicitly specified in the API request in
 order to be included in the response. (By default the v2 search endpoint
 JSON contains only Tweet ID and text.)
 
-In order to use the functions in this package API keys specifically for
+In order to use the functions in this package, API keys specifically for
 the [Academic Research product
 track](https://developer.twitter.com/en/solutions/academic-research) are
 required, standard API access keys will not work.
