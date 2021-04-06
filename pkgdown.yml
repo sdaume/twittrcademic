@@ -2,7 +2,7 @@ pandoc: 2.7.3
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles: {}
-last_built: 2021-04-06T14:51Z
+last_built: 2021-04-06T17:53Z
 urls:
   reference: https://sdaume.github.io/twittrcademic/reference
   article: https://sdaume.github.io/twittrcademic/articles
