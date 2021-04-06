@@ -30,7 +30,7 @@
     jqr::combine() %>%
     jsonlite::fromJSON() %>%
     tibble::as_tibble() %>%
-    dplyr::na_if(., "")
+    dplyr::na_if("")
 }
 
 
@@ -100,5 +100,54 @@
     return(id)
   } else {
     return(NA)
+  }
+}
+
+
+
+#' jq filter to extract create date of oldest Tweet in v2 search endpoint JSON
+#'
+#' @param tweetId a character string specifying the ID of the oldest Tweet
+#'   contained in a v2 search endpoint JSON reponse; typcially obtained via
+#'   \code{.oldest_id} and \code{.search_metadata}
+#'
+#' @keywords internal
+#'
+.jq_date_oldest_id <- function(tweetId) {
+  jq_filter <- paste('if has("data") then .data[] ',
+                     'else empty end | ',
+                     'select(.id=="', tweetId, '").created_at', sep = ""
+  )
+
+  return (jq_filter)
+}
+
+
+
+#' Create date of the oldest Tweet in a v2 search as POSIXct date-time object
+#'
+#' @param jsonSource a JSON string as returned by the
+#'   \href{https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-all}{/2/tweets/search/all}
+#'    endpoint
+#'
+#' @param tweetId a character string specifying the ID of the oldest Tweet
+#'   contained in a v2 search endpoint JSON reponse; typcially obtained via
+#'   \code{.oldest_id} and \code{.search_metadata}
+#'
+#' @keywords internal
+#'
+.oldest_tweet_date <- function(jsonSource, tweetId) {
+
+  oldest_date <- jsonSource %>%
+    jqr::jq(.jq_date_oldest_id(tweetId)) %>%
+    jqr::combine() %>%
+    jsonlite::fromJSON()
+
+  if(!is.null(oldest_date) && !is.na(oldest_date) && (nchar(oldest_date) > 0)) {
+    tweet_date <- lubridate::parse_date_time(x = oldest_date,
+                                             orders = "%Y-%m-%d %H:%M:%OS%z")
+    return(tweet_date)
+  } else {
+    return(NULL)
   }
 }
