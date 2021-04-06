@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • twittrcademic</title>
+<title>Create date of the oldest Tweet in a v2 search as POSIXct date-time object — .oldest_tweet_date • twittrcademic</title>
 
 
 <!-- jquery -->
@@ -41,7 +41,8 @@
   <link href="../extra.css" rel="stylesheet">
   
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Create date of the oldest Tweet in a v2 search as POSIXct date-time object — .oldest_tweet_date" />
+<meta property="og:description" content="Create date of the oldest Tweet in a v2 search as POSIXct date-time object" />
 
 
 
@@ -60,7 +61,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -107,61 +108,38 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Create date of the oldest Tweet in a v2 search as POSIXct date-time object</h1>
+    <small class="dont-index">Source: <a href='https://github.com/sdaume/twittrcademic/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
+    <div class="hidden name"><code>dot-oldest_tweet_date.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    <p>Create date of the oldest Tweet in a v2 search as POSIXct date-time object</p>
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
+    <pre class="usage"><span class='fu'>.oldest_tweet_date</span><span class='op'>(</span><span class='va'>jsonSource</span>, <span class='va'>tweetId</span><span class='op'>)</span></pre>
 
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      
-      
-    </tbody><tbody>
-      
-      
-      <tr>
-        
-        <td>
-          <p><code><a href="oauth_twitter_token.html">oauth_twitter_token()</a></code> </p>
-        </td>
-        <td><p>Authenticate Twitter API access and get bearer token</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="search_and_store_tweets.html">search_and_store_tweets()</a></code> </p>
-        </td>
-        <td><p>Retrieve and store all Tweets for a given full archive search query</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="search_tweets.html">search_tweets()</a></code> </p>
-        </td>
-        <td><p>Get JSON response for a single full archive Tweet search query</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="twittrcademic.html">twittrcademic</a></code> </p>
-        </td>
-        <td><p>twittrcademic: Collecting Tweet Data Via The Twitter Academic Research
-Product Track</p></td>
-      </tr>
-    </tbody>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>jsonSource</th>
+      <td><p>a JSON string as returned by the
+<a href='https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-all'>/2/tweets/search/all</a>
+endpoint</p></td>
+    </tr>
+    <tr>
+      <th>tweetId</th>
+      <td><p>a character string specifying the ID of the oldest Tweet
+contained in a v2 search endpoint JSON reponse; typcially obtained via
+<code>.oldest_id</code> and <code>.search_metadata</code></p></td>
+    </tr>
     </table>
-  </div>
 
+
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>

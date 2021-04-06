@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • twittrcademic</title>
+<title>Get JSON response for a single full archive Tweet search query — search_tweets • twittrcademic</title>
 
 
 <!-- jquery -->
@@ -41,7 +41,11 @@
   <link href="../extra.css" rel="stylesheet">
   
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Get JSON response for a single full archive Tweet search query — search_tweets" />
+<meta property="og:description" content="v2_tweets_search_all allows to execute a single Tweet search API call
+against the
+/2/tweets/search/all
+endpoint in the Twitter Academic Research product track." />
 
 
 
@@ -60,7 +64,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -107,61 +111,82 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Get JSON response for a single full archive Tweet search query</h1>
+    <small class="dont-index">Source: <a href='https://github.com/sdaume/twittrcademic/blob/master/R/search-tweets.R'><code>R/search-tweets.R</code></a></small>
+    <div class="hidden name"><code>search_tweets.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    <p><code>v2_tweets_search_all</code> allows to execute a single Tweet search API call
+against the
+<a href='https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-all'>/2/tweets/search/all</a>
+endpoint in the Twitter Academic Research product track.</p>
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
+    <pre class="usage"><span class='fu'>search_tweets</span><span class='op'>(</span><span class='va'>queryString</span>, fromDate <span class='op'>=</span> <span class='cn'>NULL</span>, toDate <span class='op'>=</span> <span class='cn'>NULL</span>,
+  nextToken <span class='op'>=</span> <span class='cn'>NA</span>, maxResult <span class='op'>=</span> <span class='fl'>500</span>, <span class='va'>twitterBearerToken</span><span class='op'>)</span></pre>
 
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      
-      
-    </tbody><tbody>
-      
-      
-      <tr>
-        
-        <td>
-          <p><code><a href="oauth_twitter_token.html">oauth_twitter_token()</a></code> </p>
-        </td>
-        <td><p>Authenticate Twitter API access and get bearer token</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="search_and_store_tweets.html">search_and_store_tweets()</a></code> </p>
-        </td>
-        <td><p>Retrieve and store all Tweets for a given full archive search query</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="search_tweets.html">search_tweets()</a></code> </p>
-        </td>
-        <td><p>Get JSON response for a single full archive Tweet search query</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="twittrcademic.html">twittrcademic</a></code> </p>
-        </td>
-        <td><p>twittrcademic: Collecting Tweet Data Via The Twitter Academic Research
-Product Track</p></td>
-      </tr>
-    </tbody>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>queryString</th>
+      <td><p>a character string specifying a value for the Tweet search
+query parameter (e.g. <em>"sustainability (climate change)"</em>,
+<em>"from:stefandaume"</em> etc). See
+<a href='https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-all'>here</a>
+for details. Maximum of 1024 characters.</p></td>
+    </tr>
+    <tr>
+      <th>fromDate</th>
+      <td><p>an optional character string of format ("YYYY-MM-DD") specifying the
+date for the oldest Tweets to be included in the search result (interpreted
+as inclusive); corresponds to the <code>start_time</code> parameter of the
+<a href='https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-all'>/2/tweets/search/all</a>
+endpoint. Must NOT be a date before "2006-03-21". If no value is supplied
+(default), it is interpreted as the 30th day before <code>toDate</code>.</p></td>
+    </tr>
+    <tr>
+      <th>toDate</th>
+      <td><p>an optional character string of format ("YYYY-MM-DD") specifying the date
+for the most recent Tweets to be included in the search result (interpreted
+as inclusive); corresponds to the <code>end_time</code> parameter of the
+<a href='https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-all'>/2/tweets/search/all</a>
+endpoint. If no value is supplied (default), it is interpreted as the
+current date.</p></td>
+    </tr>
+    <tr>
+      <th>nextToken</th>
+      <td><p>a character string specifying a token used to iterate over
+search results larger than the maximum of 500. If a Tweet search has more
+results, the metadata section in the JSON response will provide a
+<strong>next_token</strong> value, which can be used to paginate over the next set
+of results (see
+<a href='https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/paginate'>here</a>
+for details.) <code><a href='search_and_store_tweets.html'>search_and_store_tweets()</a></code> uses this mechanism to
+retrieve complete result sets.</p></td>
+    </tr>
+    <tr>
+      <th>maxResult</th>
+      <td><p>an integer specifying the maximum number of Tweets returned
+in a single search API call (minimum is 10, maximum is 500)</p></td>
+    </tr>
+    <tr>
+      <th>twitterBearerToken</th>
+      <td><p>a character string specifying a valid bearer token
+for the
+<a href='https://developer.twitter.com/en/solutions/academic-research'>Twitter
+Academic Research product track</a> (see <code><a href='oauth_twitter_token.html'>oauth_twitter_token()</a></code>).</p></td>
+    </tr>
     </table>
-  </div>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>the Twitter API JSON response as a JSON character string</p>
+
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>

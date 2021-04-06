@@ -105,22 +105,22 @@
 <span class="va">bearer</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/oauth_twitter_token.html">oauth_twitter_token</a></span><span class="op">(</span>consumerKey <span class="op">=</span> <span class="st">"YOUR_ACADEMIC_PRODUCT_API_KEY"</span>,
                               consumerSecret <span class="op">=</span> <span class="st">"YOUR_ACADEMIC_PRODUCT_API_SECRET"</span><span class="op">)</span>
 
-<span class="va">json_response</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/v2_tweets_search_all.html">v2_tweets_search_all</a></span><span class="op">(</span>queryString <span class="op">=</span> <span class="st">"openscience"</span>, 
-                                      maxResult <span class="op">=</span> <span class="fl">100</span>,  
-                                      toDate <span class="op">=</span> <span class="st">"2020-06-12"</span>,
-                                      twitterBearerToken <span class="op">=</span> <span class="va">bearer</span><span class="op">)</span></code></pre></div>
+<span class="va">json_response</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/search_tweets.html">search_tweets</a></span><span class="op">(</span>queryString <span class="op">=</span> <span class="st">"openscience"</span>, 
+                               maxResult <span class="op">=</span> <span class="fl">100</span>,  
+                               toDate <span class="op">=</span> <span class="st">"2020-06-12"</span>,
+                               twitterBearerToken <span class="op">=</span> <span class="va">bearer</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="retrieve-and-store-all-available-results" class="section level3">
 <h3 class="hasAnchor">
 <a href="#retrieve-and-store-all-available-results" class="anchor"></a>Retrieve and store all available results</h3>
-<p>The following would return all Tweets posted in the year <strong><em>2020</em></strong> that contain the term <strong><em>‘planetary boundaries’</em></strong>. This will run until all results are retrieved. The results will be summarised into batches of files that contain approximately <strong><em>20000</em></strong> Tweets; files are stored in the working directory and all start with <strong><em>‘query_label’</em></strong> (for example <code>query_label_20200101_20201231_1_20453.json</code>); in addition to the base label the file name indicates the date range (implicit or explicit) of the query, a numeric index for the batch and the number of Tweet results in the given batch.</p>
+<p>The following example would collect all Tweets posted in the year <strong><em>2020</em></strong> that contain the term <strong><em>‘planetary boundaries’</em></strong>. This will run until all results are retrieved. The results will be summarised into batches of files that contain approximately <strong><em>20000</em></strong> Tweets; files are stored in the working directory and all start with <strong><em>‘query_label’</em></strong> (for example <code>query_label_20200101_20201231_1_20453.json</code>); in addition to the base label the file name indicates the date range (implicit or explicit) of the query, a numeric index for the batch and the number of Tweet results in the given batch.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://sdaume.github.io/twittrcademic">twittrcademic</a></span><span class="op">)</span>
 
 <span class="va">bearer</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/oauth_twitter_token.html">oauth_twitter_token</a></span><span class="op">(</span>consumerKey <span class="op">=</span> <span class="st">"YOUR_ACADEMIC_PRODUCT_API_KEY"</span>,
                               consumerSecret <span class="op">=</span> <span class="st">"YOUR_ACADEMIC_PRODUCT_API_SECRET"</span><span class="op">)</span>
 
-<span class="fu"><a href="reference/tweets_search_and_store.html">tweets_search_and_store</a></span><span class="op">(</span>queryString <span class="op">=</span> <span class="st">"planetary boundaries"</span>, 
+<span class="fu"><a href="reference/search_and_store_tweets.html">search_and_store_tweets</a></span><span class="op">(</span>queryString <span class="op">=</span> <span class="st">"planetary boundaries"</span>, 
                         fromDate <span class="op">=</span> <span class="st">"2020-01-01"</span>, 
                         toDate <span class="op">=</span> <span class="st">"2020-12-31"</span>,
                         maxBatchSize <span class="op">=</span> <span class="fl">20000</span>,
