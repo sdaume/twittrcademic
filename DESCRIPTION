@@ -22,4 +22,5 @@ Imports:
     jqr,
     tibble,
     dplyr,
-    lubridate
+    lubridate,
+    utils

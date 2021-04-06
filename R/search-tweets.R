@@ -5,15 +5,20 @@
 #' \href{https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-all}{/2/tweets/search/all}
 #' endpoint in the Twitter Academic Research product track.
 #'
+#' @param queryString a character string specifying a value for the Tweet search
+#'   query parameter (e.g. \emph{"sustainability (climate change)"},
+#'   \emph{"from:stefandaume"} etc). See
+#'   \href{https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-all}{here}
+#'    for details. Maximum of 1024 characters.
 #'
-#' @param fromDate a character string of format ("YYYY-MM-DD") specifying the
+#' @param fromDate an optional character string of format ("YYYY-MM-DD") specifying the
 #'   date for the oldest Tweets to be included in the search result (interpreted
 #'   as inclusive); corresponds to the \code{start_time} parameter of the
 #'   \href{https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-all}{/2/tweets/search/all}
 #'    endpoint. Must NOT be a date before "2006-03-21". If no value is supplied
 #'   (default), it is interpreted as the 30th day before \code{toDate}.
 #'
-#' @param toDate a character string of format ("YYYY-MM-DD") specifying the date
+#' @param toDate an optional character string of format ("YYYY-MM-DD") specifying the date
 #'   for the most recent Tweets to be included in the search result (interpreted
 #'   as inclusive); corresponds to the \code{end_time} parameter of the
 #'   \href{https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-all}{/2/tweets/search/all}
@@ -26,7 +31,7 @@
 #'   \strong{next_token} value, which can be used to paginate over the next set
 #'   of results (see
 #'   \href{https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/paginate}{here}
-#'    for details.) \code{tweets_search_and_store()} uses this mechanism to
+#'    for details.) \code{search_and_store_tweets()} uses this mechanism to
 #'   retrieve complete result sets.
 #'
 #' @param maxResult an integer specifying the maximum number of Tweets returned
@@ -41,37 +46,68 @@
 #'
 #' @export
 #'
-v2_tweets_search_all <- function(queryString, fromDate = NULL, toDate = NULL,
-                                 nextToken = NA, maxResult = 500,
-                                 twitterBearerToken) {
-  # create url
-  search_url <- .url_v2_search_tweets_all(queryString = queryString,
-                                          fromDate = fromDate,
-                                          toDate = toDate,
-                                          nextToken = nextToken,
-                                          maxResult = maxResult)
+search_tweets <- function(queryString, fromDate = NULL, toDate = NULL,
+                          nextToken = NA, maxResult = 500,
+                          twitterBearerToken) {
 
-  # run api call
-  bearer <- paste("Bearer", twitterBearerToken)
-  api_request <- httr::GET(search_url, httr::add_headers(Authorization = bearer))
 
-  # get and return json
-  json <- httr::content(api_request, as = "text")
+  api_response <- get_v2_tweets_search_all(queryString = queryString,
+                                           fromDate = fromDate,
+                                           toDate = toDate,
+                                           nextToken = nextToken,
+                                           maxResult = maxResult,
+                                           twitterBearerToken = twitterBearerToken)
+
+  json <- httr::content(api_response, as = "text")
 
   return(json)
 }
 
 
 
+#' Get API response for a single full archive Tweet search query
+#'
+#' Execute a Tweet search against the the
+#' \href{https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-all}{/2/tweets/search/all}
+#' endpoint and return the HTTP response object.
+#'
+#' Same parameters as \code{search_tweets()}.
+#'
+#' @return the complete Twitter API response
+#'
+#' @keywords internal
+#'
+get_v2_tweets_search_all <- function(queryString, fromDate = NULL,
+                                     toDate = NULL,nextToken = NA,
+                                     maxResult = 500, twitterBearerToken) {
+
+  # create url
+  search_url <- url_v2_search_tweets_all(queryString = queryString,
+                                         fromDate = fromDate,
+                                         toDate = toDate,
+                                         nextToken = nextToken,
+                                         maxResult = maxResult)
+
+  # run api call
+  bearer <- paste("Bearer", twitterBearerToken)
+  api_response <- httr::GET(search_url, httr::add_headers(Authorization = bearer))
+
+  return(api_response)
+}
+
+
+
+
+
 #' Retrieve and store all Tweets for a given full archive search query
 #'
-#' \code{tweets_search_and_store} allows to execute long-running Tweet searches
+#' \code{search_and_store_tweets} allows to execute long-running Tweet searches
 #' against the
 #' \href{https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-all}{/2/tweets/search/all}
 #' endpoint in the Twitter Academic Research product track
 #' \href{https://developer.twitter.com/en/solutions/academic-research}{Twitter
-#' Academic Research product track} and store the results as batches of the
-#' original JSON responses.
+#' Academic Research product track} and store the results as batches of files
+#' containing the original JSON responses.
 #'
 #' Based on a given Tweet search query and (optional) date range this function
 #' iteratively retrieves all matching Tweets and stores the results in batches
@@ -79,17 +115,23 @@ v2_tweets_search_all <- function(queryString, fromDate = NULL, toDate = NULL,
 #' batches containing the (approximate) number of Tweets specified by
 #' \code{maxBatchSize} Tweets.
 #'
-#' The calls to the search API endpoint are timed such the API call limit of at
-#' most 300 calls per 15 minute window is observed; this corresponds to a
-#' maximum of 150.000 Tweets that can be retrieved every 15 minutes (each
-#' individual API call returns at most 500 Tweets).
+#' The calls to the search API endpoint are timed such that the API call limit
+#' of at most one call per second and 300 calls per 15 minute window is
+#' observed; this corresponds to a maximum of 150.000 Tweets that can be
+#' retrieved every 15 minutes (each individual API call returns at most 500
+#' Tweets).
+#'
+#' When running a query a progress bar in the console indicates how quickly data
+#' collection is advancing; progress is shown in relation to the (explicitly or
+#' implicitly) specified search time range and dates of the Tweets in the
+#' retrieved Tweet batches.
+#'
 #'
 #' @param queryString a character string specifying a value for the Tweet search
 #'   query parameter (e.g. \emph{"sustainability (climate change)"},
 #'   \emph{"from:stefandaume"} etc). See
 #'   \href{https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-all}{here}
 #'    for details. Maximum of 1024 characters.
-#'
 #'
 #' @param fromDate a character string of format ("YYYY-MM-DD") specifying the
 #'   date for the oldest Tweets to be included in the search results
@@ -120,11 +162,16 @@ v2_tweets_search_all <- function(queryString, fromDate = NULL, toDate = NULL,
 #'   \href{https://developer.twitter.com/en/solutions/academic-research}{Twitter
 #'   Academic Research product track} (see \code{oauth_twitter_token()}).
 #'
+#' @param verbose a boolean indicating whether more detailed intermediate
+#'   progress messages should be printed to the console; if \emph{FALSE} only a
+#'   progress bar based on the specified or implied date range and the date of
+#'   the latest retrieved Tweet will be printed
+#'
 #' @export
 #'
-tweets_search_and_store <- function(queryString, fromDate = NULL, toDate = NULL,
+search_and_store_tweets <- function(queryString, fromDate = NULL, toDate = NULL,
                                     batchBaseLabel = NULL, maxBatchSize = 10000,
-                                    twitterBearerToken = NULL) {
+                                    twitterBearerToken = NULL, verbose = TRUE) {
 
   if (is.null(twitterBearerToken)) {
     stop("Invalid twitterBearerToken - must not be NULL.")
@@ -133,16 +180,14 @@ tweets_search_and_store <- function(queryString, fromDate = NULL, toDate = NULL,
   if (is.null(batchBaseLabel) || nchar(trimws(batchBaseLabel)) == 0) {
     stop("Please provide a valid batchBaseLabel - must not be NULL or empty.")
   }
-  ####### >>>>>
-  #bearer_token <- paste("Bearer", twitterBearerToken)
 
   # initialise control variables
+  retry_limit <- 10
   next_token <- NA
   next_page <- 0
   json_batches <- NULL
-  last_issued_call <- NULL
-
   n_batch_results_cumulative <- 0
+  n_results_total <- 0
   batch_id <- 1
 
   # date range labels to specify the batches
@@ -162,53 +207,71 @@ tweets_search_and_store <- function(queryString, fromDate = NULL, toDate = NULL,
                          gsub("-", "", fromDate))
   }
 
+  # print infor message and create progress bar
+  writeLines(paste("Pulling Tweets posted from ", lubridate::ymd(from_label),
+                   " to ", lubridate::ymd(to_label), " and matching the query \"",
+                   queryString, "\".\n", sep = ""))
+
+  search_progressbar <- utils::txtProgressBar(min = 0, max = 100, initial = 0,
+                                              char = "=", style = 3)
+
   while (!is.na(next_token) || next_page == 0) {
     next_page <- next_page + 1
 
-    ##### >>>
-    #search_url <- .url_v2_search_tweets_all(queryString = queryString,
-    #                                        fromDate = fromDate,
-    #                                        toDate = toDate,
-    #                                        nextToken = next_token)
+    api_response <- get_v2_tweets_search_all(queryString = queryString,
+                                             fromDate = fromDate,
+                                             toDate = toDate,
+                                             nextToken = next_token,
+                                             twitterBearerToken = twitterBearerToken)
 
-    # time the calls to ensure rate limits are not exceeded, but also not wasted
-    # this achieves retrieval of at most 150.000 Tweets per 15 minutes (300 calls)
-    current_time <- Sys.time()
-    if (!is.null(last_issued_call) && as.numeric(current_time - last_issued_call) < 3) {
-      Sys.sleep(3 - (current_time - last_issued_call))
-      #print(paste("should sleep", 3 - (current_time - last_issued_call)))
-    }
-    ##### >>>>
-    #api_request <- httr::GET(search_url, httr::add_headers(Authorization = bearer_token))
+    # default wait of one second to ensure that the endpoint rate limit of
+    # at most one call per second is observed
+    Sys.sleep(1)
 
+    # wait and retry if there is an error, otherwise extract the results
+    if (httr::http_error(api_response)) {
+      # increase the wait time with repeated failures
+      if (verbose) {
+        writeLines(paste("\nHTTP error:", httr::http_status(api_response)$message,
+                         "Retrying in", floor(30/retry_limit), "seconds.\n"))
+      }
+      Sys.sleep(30/retry_limit)
+      retry_limit <- retry_limit - 1
 
-
-    ##### >>>>
-    #json <- httr::content(api_request, as = "text")
-
-    json <- v2_tweets_search_all(queryString = queryString,
-                                 fromDate = fromDate,
-                                 toDate = toDate,
-                                 nextToken = next_token,
-                                 twitterBearerToken = twitterBearerToken)
-
-    last_issued_call <- Sys.time()
-
-    if (!is.null(json_batches)) {
-      json_batches <- paste(json_batches, json, sep = "\n")
     } else {
-      json_batches <- json
+      retry_limit <- 10
+
+      # collect the JSON from the response
+      json <- httr::content(api_response, as = "text")
+
+      if (!is.null(json_batches)) {
+        json_batches <- paste(json_batches, json, sep = "\n")
+      } else {
+        json_batches <- json
+      }
+
+      # get next token and other search result metadata
+      search_metadata <- .search_metadata(json)
+      next_token <- .next_token(search_metadata)
+
+      n_batch_results_cumulative <- n_batch_results_cumulative + .result_count(search_metadata)
+
+      # get the date for the oldest Tweet to update the progress indicator
+      latest_date <- .oldest_tweet_date(json, .oldest_id(search_metadata))
+      total_duration <- as.numeric(lubridate::ymd(to_label) - lubridate::ymd(from_label))
+      covered_duration <- as.numeric(lubridate::ymd(to_label) - as.Date(latest_date))
+
+      utils::setTxtProgressBar(search_progressbar,
+                               value = (100 * covered_duration/total_duration))
     }
 
-    search_metadata <- .search_metadata(json)
+    # store batch if threshold is met or no more results
+    if (n_batch_results_cumulative >= maxBatchSize || is.na(next_token) || retry_limit == 0) {
 
-    next_token <- .next_token(search_metadata)
+      if (retry_limit == 0) {
+        writeLines("\nRepeated HTTP errors. Aborting data collection.")
+      }
 
-    n_batch_results_cumulative <- n_batch_results_cumulative + .result_count(search_metadata)
-
-    cat(paste(n_batch_results_cumulative, "...", sep = ""))
-
-    if (n_batch_results_cumulative >= maxBatchSize || is.na(next_token)) {
       batch_name <- paste(batchBaseLabel,"_",
                           from_label, "_", to_label, "_",
                           batch_id,"_",
@@ -216,20 +279,53 @@ tweets_search_and_store <- function(queryString, fromDate = NULL, toDate = NULL,
                           ".json",
                           sep = "")
 
-      cat(paste("\nSTORING BATCH", batch_id, "...", batch_name, Sys.time()))
 
       # storing with 'useBytes = TRUE' is required when running on Win systems
       # to avoid encoding issues when reading the stored files
       writeLines(json_batches, batch_name, useBytes = TRUE)
 
-      cat(paste("... DONE", Sys.time(), "\n\n"))
+      if(verbose) {
+        writeLines(paste("\n\n", Sys.time(), " - STORING BATCH ",
+                         batch_id, " with ", n_batch_results_cumulative,
+                         " Tweets: ", batch_name,
+                         "\n(Oldest Tweet in this batch created_at: ",
+                         latest_date, "). Resuming data collection ...\n",
+                         sep = ""))
+      }
+
+      # keep a count of results total
+      n_results_total <- n_results_total + n_batch_results_cumulative
 
       if (!is.na(next_token)) {
         batch_id <- batch_id + 1
         json_batches <- NULL
         n_batch_results_cumulative <- 0
       } else {
-        return("No further results available.")
+        return(paste("Retrieved", n_results_total, "Tweets.",
+                     ifelse(retry_limit == 10,
+                            "No further results available.",
+                            "Results are probably incomplete!")))
+      }
+    }
+
+    # check the rate limiting parameters (300 calls per 15 minute window) and
+    # wait if necessary (this corresponds to ~150.000 Tweets every 15 minutes)
+
+    if (!httr::http_error(api_response)) {
+      http_headers <- httr::headers(api_response)
+      rate_limit_remaining <- as.integer(http_headers$`x-rate-limit-remaining`)
+
+      if (!is.na(rate_limit_remaining) && (rate_limit_remaining == 0) && !is.na(next_token)) {
+        rate_limit_reset <- as.integer(http_headers$`x-rate-limit-reset`)
+        current_epochs <- as.integer(as.POSIXct(Sys.time()))
+
+        if(verbose) {
+          writeLines(paste("\nRATE LIMIT REACHED! Need to wait:",
+                           ((rate_limit_reset - current_epochs) + 1),
+                           "seconds before resuming.\n"))
+        }
+
+        Sys.sleep((rate_limit_reset - current_epochs) + 1)
       }
     }
   }
@@ -243,8 +339,8 @@ tweets_search_and_store <- function(queryString, fromDate = NULL, toDate = NULL,
 #'
 #' @keywords internal
 #'
-.url_v2_search_tweets_all <- function(queryString, maxResult = 500, nextToken = NA,
-                                      fromDate = NULL, toDate = NULL) {
+url_v2_search_tweets_all <- function(queryString, maxResult = 500, nextToken = NA,
+                                     fromDate = NULL, toDate = NULL) {
 
   TWEET_FIELDS <- c("created_at", "lang", "conversation_id", "author_id",
                     "public_metrics", "in_reply_to_user_id", "referenced_tweets",
@@ -269,7 +365,7 @@ tweets_search_and_store <- function(queryString, fromDate = NULL, toDate = NULL,
     end_time <- strptime(paste(end_time, "T24:00:00.000Z", sep = ""),
                          tz = "UTC", format = "%Y-%m-%dT%H:%M:%OS")
     end_time <- lubridate::format_ISO8601(end_time)
-    end_time <- URLencode(paste(end_time, "Z", sep = ""), reserved = TRUE)
+    end_time <- utils::URLencode(paste(end_time, "Z", sep = ""), reserved = TRUE)
   }
 
   start_time <- fromDate
@@ -277,14 +373,14 @@ tweets_search_and_store <- function(queryString, fromDate = NULL, toDate = NULL,
     start_time <- strptime(paste(start_time, "T00:00:00.000Z", sep = ""),
                            tz = "UTC", format = "%Y-%m-%dT%H:%M:%OS")
     start_time <- lubridate::format_ISO8601(start_time)
-    start_time <- URLencode(paste(start_time, "Z", sep = ""), reserved = TRUE)
+    start_time <- utils::URLencode(paste(start_time, "Z", sep = ""), reserved = TRUE)
   }
 
   # assemble the URL
   full_archive_base_url <- "https://api.twitter.com/2/tweets/search/all?"
 
   url <- paste(full_archive_base_url,
-               "query=", URLencode(queryString),
+               "query=", utils::URLencode(queryString),
                "&max_results=", maxResult,
                ifelse(!is.null(start_time), paste("&start_time=", start_time, sep = ""), ""),
                ifelse(!is.null(end_time), paste("&end_time=", end_time, sep = ""), ""),

@@ -2,6 +2,6 @@
 
 export("%>%")
 export(oauth_twitter_token)
-export(tweets_search_and_store)
-export(v2_tweets_search_all)
+export(search_and_store_tweets)
+export(search_tweets)
 importFrom(magrittr,"%>%")
