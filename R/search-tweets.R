@@ -380,7 +380,7 @@ url_v2_search_tweets_all <- function(queryString, maxResult = 500, nextToken = N
   full_archive_base_url <- "https://api.twitter.com/2/tweets/search/all?"
 
   url <- paste(full_archive_base_url,
-               "query=", utils::URLencode(queryString),
+               "query=", utils::URLencode(queryString, reserved = TRUE),
                "&max_results=", maxResult,
                ifelse(!is.null(start_time), paste("&start_time=", start_time, sep = ""), ""),
                ifelse(!is.null(end_time), paste("&end_time=", end_time, sep = ""), ""),

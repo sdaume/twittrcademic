@@ -1,6 +1,6 @@
 Package: twittrcademic
 Title: Collecting Tweet Data Via The Twitter Academic Research Product Track 
-Version: 0.1.0
+Version: 0.1.0.9000
 Authors@R: c(
     person("Stefan", "Daume", email = "stefan.daume@su.se", 
             role = c("cre", "aut")))
