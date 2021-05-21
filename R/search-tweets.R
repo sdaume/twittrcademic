@@ -258,11 +258,13 @@ search_and_store_tweets <- function(queryString, fromDate = NULL, toDate = NULL,
 
       # get the date for the oldest Tweet to update the progress indicator
       latest_date <- .oldest_tweet_date(json, .oldest_id(search_metadata))
-      total_duration <- as.numeric(lubridate::ymd(to_label) - lubridate::ymd(from_label))
-      covered_duration <- as.numeric(lubridate::ymd(to_label) - as.Date(latest_date))
 
-      utils::setTxtProgressBar(search_progressbar,
-                               value = (100 * covered_duration/total_duration))
+      if (!is.null(latest_date)) {
+        total_duration <- as.numeric(lubridate::ymd(to_label) - lubridate::ymd(from_label))
+        covered_duration <- as.numeric(lubridate::ymd(to_label) - as.Date(latest_date))
+        utils::setTxtProgressBar(search_progressbar,
+                                 value = (100 * covered_duration/total_duration))
+      }
     }
 
     # store batch if threshold is met or no more results
@@ -282,6 +284,7 @@ search_and_store_tweets <- function(queryString, fromDate = NULL, toDate = NULL,
 
       # storing with 'useBytes = TRUE' is required when running on Win systems
       # to avoid encoding issues when reading the stored files
+
       writeLines(json_batches, batch_name, useBytes = TRUE)
 
       if(verbose) {

@@ -5,8 +5,8 @@
 .jq_metadata_v2_filter <- function() {
   jq_filter <- paste('if has("meta") then .meta ',
                      'else empty end | ',
-                     '{"newest_id": .newest_id ,',
-                     ' "oldest_id": .oldest_id, ',
+                     '{"newest_id": (.newest_id // ""),',
+                     ' "oldest_id": (.oldest_id // ""), ',
                      ' "next_token": (.next_token // ""), ',
                      ' "result_count": .result_count}')
 
@@ -138,15 +138,19 @@
 #'
 .oldest_tweet_date <- function(jsonSource, tweetId) {
 
-  oldest_date <- jsonSource %>%
-    jqr::jq(.jq_date_oldest_id(tweetId)) %>%
-    jqr::combine() %>%
-    jsonlite::fromJSON()
+  if (!is.null(jsonSource) && !is.na(tweetId)) {
+    oldest_date <- jsonSource %>%
+      jqr::jq(.jq_date_oldest_id(tweetId)) %>%
+      jqr::combine() %>%
+      jsonlite::fromJSON()
 
-  if(!is.null(oldest_date) && !is.na(oldest_date) && (nchar(oldest_date) > 0)) {
-    tweet_date <- lubridate::parse_date_time(x = oldest_date,
-                                             orders = "%Y-%m-%d %H:%M:%OS%z")
-    return(tweet_date)
+    if(!is.null(oldest_date) && !is.na(oldest_date) && (nchar(oldest_date) > 0)) {
+      tweet_date <- lubridate::parse_date_time(x = oldest_date,
+                                               orders = "%Y-%m-%d %H:%M:%OS%z")
+      return(tweet_date)
+    } else {
+      return(NULL)
+    }
   } else {
     return(NULL)
   }
