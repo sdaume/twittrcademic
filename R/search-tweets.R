@@ -11,16 +11,18 @@
 #'   \href{https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-all}{here}
 #'    for details. Maximum of 1024 characters.
 #'
-#' @param fromDate an optional character string of format ("YYYY-MM-DD") specifying the
-#'   date for the oldest Tweets to be included in the search result (interpreted
-#'   as inclusive); corresponds to the \code{start_time} parameter of the
+#' @param fromDate an optional character string of format ("YYYY-MM-DD")
+#'   specifying the date for the oldest Tweets to be included in the search
+#'   result (interpreted as inclusive); corresponds to the \code{start_time}
+#'   parameter of the
 #'   \href{https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-all}{/2/tweets/search/all}
 #'    endpoint. Must NOT be a date before "2006-03-21". If no value is supplied
 #'   (default), it is interpreted as the 30th day before \code{toDate}.
 #'
-#' @param toDate an optional character string of format ("YYYY-MM-DD") specifying the date
-#'   for the most recent Tweets to be included in the search result (interpreted
-#'   as inclusive); corresponds to the \code{end_time} parameter of the
+#' @param toDate an optional character string of format ("YYYY-MM-DD")
+#'   specifying the date for the most recent Tweets to be included in the search
+#'   result (interpreted as inclusive); corresponds to the \code{end_time}
+#'   parameter of the
 #'   \href{https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference/get-tweets-search-all}{/2/tweets/search/all}
 #'    endpoint. If no value is supplied (default), it is interpreted as the
 #'   current date.
@@ -35,7 +37,9 @@
 #'   retrieve complete result sets.
 #'
 #' @param maxResult an integer specifying the maximum number of Tweets returned
-#'   in a single search API call (minimum is 10, maximum is 500)
+#'   in a single search API call (minimum is 10, maximum is 500, but only 100
+#'   when retrieving \code{context_annotations} with the \code{tweet.fields}
+#'   query parameter)
 #'
 #' @param twitterBearerToken a character string specifying a valid bearer token
 #'   for the
@@ -47,7 +51,7 @@
 #' @export
 #'
 search_tweets <- function(queryString, fromDate = NULL, toDate = NULL,
-                          nextToken = NA, maxResult = 500,
+                          nextToken = NA, maxResult = 100,
                           twitterBearerToken) {
 
 
@@ -79,7 +83,7 @@ search_tweets <- function(queryString, fromDate = NULL, toDate = NULL,
 #'
 get_v2_tweets_search_all <- function(queryString, fromDate = NULL,
                                      toDate = NULL,nextToken = NA,
-                                     maxResult = 500, twitterBearerToken) {
+                                     maxResult = 100, twitterBearerToken) {
 
   # create url
   search_url <- url_v2_search_tweets_all(queryString = queryString,
@@ -87,6 +91,8 @@ get_v2_tweets_search_all <- function(queryString, fromDate = NULL,
                                          toDate = toDate,
                                          nextToken = nextToken,
                                          maxResult = maxResult)
+
+  #print(search_url)
 
   # run api call
   bearer <- paste("Bearer", twitterBearerToken)
@@ -117,8 +123,8 @@ get_v2_tweets_search_all <- function(queryString, fromDate = NULL,
 #'
 #' The calls to the search API endpoint are timed such that the API call limit
 #' of at most one call per second and 300 calls per 15 minute window is
-#' observed; this corresponds to a maximum of 150.000 Tweets that can be
-#' retrieved every 15 minutes (each individual API call returns at most 500
+#' observed; this corresponds to a maximum of 30.000 Tweets that can be
+#' retrieved every 15 minutes (each individual API call returns at most 100
 #' Tweets).
 #'
 #' When running a query a progress bar in the console indicates how quickly data
